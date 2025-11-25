@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "oh-no": {
+      "command": "uv",
+      "args": ["run", "oh-no-mcp"],
+      "cwd": "/Users/eamonnfaherty/Development/oh-no-mcp-server"
+    }
+  }
+}

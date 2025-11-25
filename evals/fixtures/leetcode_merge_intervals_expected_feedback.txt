@@ -1,0 +1,72 @@
+Performance Review: Merge Intervals Solution
+
+## Performance Bottlenecks
+
+The implementation uses repeated passes with nested loops that continue until no more merges are found, resulting in O(n³) worst-case time complexity. Each merge operation requires checking all pairs and rebuilding the result array.
+
+Specific issues:
+- Outer while loop continues until no merges happen
+- Nested loops check all pairs of intervals (O(n²) per pass)
+- Multiple passes through the data (potentially O(n) passes in worst case)
+- Checking `if merged_interval not in new_result` is O(n) operation
+- Rebuilding result array repeatedly causes excessive allocations
+
+## Memory Usage
+
+Memory usage is O(n²) in worst case due to creating new result arrays on each pass and storing intermediate merged intervals that may be duplicated.
+
+## Algorithm Complexity
+
+- **Time Complexity**: O(n³) - multiple O(n²) passes through nested loops
+- **Space Complexity**: O(n²) - repeated array creations and intermediate storage
+
+For n = 1,000 intervals, this could perform billions of operations.
+
+## Optimization Suggestions
+
+### Sort Once Then Single Pass for O(n log n) Solution
+
+Replace repeated passes with sort followed by single merge pass:
+
+```python
+def merge_intervals_optimized(intervals):
+    if not intervals:
+        return []
+
+    # Sort intervals by start time
+    intervals.sort(key=lambda x: x[0])
+
+    merged = [intervals[0]]
+
+    for current in intervals[1:]:
+        last = merged[-1]
+
+        # Check if current overlaps with last merged interval
+        if current[0] <= last[1]:
+            # Merge by extending the end time
+            last[1] = max(last[1], current[1])
+        else:
+            # No overlap, add as new interval
+            merged.append(current)
+
+    return merged
+```
+
+This achieves O(n log n) time (dominated by sorting) with O(n) space.
+
+## Best Practices
+
+1. **Sort first for interval problems**: Sorting makes overlap detection linear
+2. **Single pass after preprocessing**: Sort once, then merge in one pass
+3. **Avoid nested loops for merging**: Sequential processing after sorting is sufficient
+4. **Don't check membership in lists**: Use indexed access instead of `in` operator
+5. **Process greedily**: After sorting, each interval only needs to compare with last merged
+
+## Performance Impact
+
+For n = 1,000 intervals:
+- Current approach: ~1,000,000,000+ operations (multiple n² passes)
+- Optimized approach: ~10,000 operations (sort + single pass)
+- Speedup: ~100,000x faster
+
+The optimized solution is the standard approach for interval merging problems and demonstrates the power of sorting as preprocessing.

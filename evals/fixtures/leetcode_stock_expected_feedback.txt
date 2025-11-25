@@ -1,0 +1,66 @@
+Performance Review: Best Time to Buy and Sell Stock Solution
+
+## Performance Bottlenecks
+
+The implementation uses nested loops to check every possible buy-sell combination, resulting in O(n²) time complexity. This brute force approach is inefficient because it recalculates profit for combinations that cannot possibly be optimal.
+
+Specific issues:
+- Outer loop considers every day as a potential buy day
+- Inner loop checks every subsequent day as a potential sell day
+- Many redundant comparisons that could be eliminated with single-pass tracking
+- Does not leverage the fact that we want minimum buy price before maximum sell price
+
+## Memory Usage
+
+Memory usage is optimal at O(1) - only a single variable tracks the maximum profit. This aspect of the solution is already efficient.
+
+## Algorithm Complexity
+
+- **Time Complexity**: O(n²) - quadratic time due to nested loops
+- **Space Complexity**: O(1) - constant space
+
+For an array of size n, this performs approximately n²/2 comparisons.
+
+## Optimization Suggestions
+
+### Use Single Pass with Min Tracking for O(n) Solution
+
+Replace nested loops with single-pass approach:
+
+```python
+def max_profit_optimized(prices):
+    if not prices:
+        return 0
+
+    min_price = float('inf')
+    max_profit = 0
+
+    for price in prices:
+        # Update minimum price seen so far
+        min_price = min(min_price, price)
+        # Calculate profit if selling today
+        current_profit = price - min_price
+        # Update maximum profit
+        max_profit = max(max_profit, current_profit)
+
+    return max_profit
+```
+
+This achieves O(n) time complexity with O(1) space.
+
+## Best Practices
+
+1. **Single pass when possible**: Track minimum price while iterating once
+2. **Avoid nested loops**: Keep state variables instead of rechecking all combinations
+3. **Leverage problem constraints**: We can only sell after buying, so track minimum buy price
+4. **Early insights**: Optimal solution always involves buying at minimum price before the sell date
+5. **State tracking**: Maintain running minimum and maximum profit instead of recalculating
+
+## Performance Impact
+
+For n = 10,000 days:
+- Current approach: ~50,000,000 comparisons
+- Optimized approach: ~10,000 operations
+- Speedup: ~5,000x faster
+
+The difference becomes critical for real-time trading systems processing years of price data.

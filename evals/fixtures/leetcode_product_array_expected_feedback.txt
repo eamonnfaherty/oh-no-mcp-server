@@ -1,0 +1,68 @@
+Performance Review: Product of Array Except Self Solution
+
+## Performance Bottlenecks
+
+The implementation creates multiple intermediate arrays for each position, resulting in O(n²) time complexity and O(n²) space complexity. The solution rebuilds left and right product arrays from scratch for every element.
+
+Specific issues:
+- Outer loop processes each of n positions
+- For each position, creates separate left_products and right_products arrays
+- Calculates products by iterating through these arrays with additional loops
+- Total operations: approximately n² array creations and iterations
+- Extremely wasteful memory allocation and deallocation
+
+## Memory Usage
+
+Memory usage is terrible at O(n²) because intermediate arrays are created for each of the n positions. Thousands of temporary arrays are created and immediately discarded.
+
+## Algorithm Complexity
+
+- **Time Complexity**: O(n²) - nested loops creating and processing arrays for each position
+- **Space Complexity**: O(n²) - multiple intermediate arrays stored temporarily
+
+The problem specifically asks for O(n) time without division, which this solution fails.
+
+## Optimization Suggestions
+
+### Use Two-Pass Prefix/Suffix Product for O(n) Solution
+
+Replace intermediate arrays with running products:
+
+```python
+def product_except_self_optimized(nums):
+    n = len(nums)
+    result = [1] * n
+
+    # Left pass: accumulate products from left
+    left_product = 1
+    for i in range(n):
+        result[i] = left_product
+        left_product *= nums[i]
+
+    # Right pass: accumulate products from right
+    right_product = 1
+    for i in range(n - 1, -1, -1):
+        result[i] *= right_product
+        right_product *= nums[i]
+
+    return result
+```
+
+This achieves O(n) time and O(1) extra space (output array doesn't count).
+
+## Best Practices
+
+1. **Prefix/suffix patterns**: Many array problems benefit from left-to-right then right-to-left passes
+2. **Avoid intermediate arrays**: Use running variables to accumulate state
+3. **Reuse result array**: Store intermediate results in the output array
+4. **Two passes are better than n²**: O(2n) is vastly better than O(n²)
+5. **Space efficiency**: Minimize allocations by reusing storage
+
+## Performance Impact
+
+For n = 1,000 elements:
+- Current approach: ~1,000,000 operations plus massive array allocations
+- Optimized approach: ~2,000 operations
+- Speedup: ~500x faster with ~1000x less memory
+
+The optimized solution is elegant and meets the problem's O(n) requirement without using division.

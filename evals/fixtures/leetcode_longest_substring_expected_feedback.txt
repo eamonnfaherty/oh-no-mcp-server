@@ -1,0 +1,70 @@
+Performance Review: Longest Substring Without Repeating Characters Solution
+
+## Performance Bottlenecks
+
+The implementation uses nested loops with repeated substring creation and set rebuilding, resulting in O(n³) time complexity. For each starting position, it checks all possible ending positions and rebuilds a character set from scratch each time.
+
+Specific issues:
+- Outer loop iterates through all starting positions
+- Inner loop checks all ending positions from each start
+- Creating substring with slicing `s[i:j+1]` is O(n) operation repeated n² times
+- Rebuilding character set for each substring instead of maintaining sliding window
+- Character-by-character set building instead of using built-in set constructor
+
+## Memory Usage
+
+Memory usage is O(n²) due to creating substring copies repeatedly. Each substring slice creates a new string object that's immediately discarded after checking.
+
+## Algorithm Complexity
+
+- **Time Complexity**: O(n³) - nested loops with O(n) substring operations
+- **Space Complexity**: O(n²) - repeated substring creations
+
+For a string of length n = 1,000, this performs hundreds of millions of operations.
+
+## Optimization Suggestions
+
+### Use Sliding Window with Hash Set for O(n) Solution
+
+Replace nested loops with efficient sliding window:
+
+```python
+def length_longest_substring_optimized(s):
+    if not s:
+        return 0
+
+    char_set = set()
+    left = 0
+    max_length = 0
+
+    for right in range(len(s)):
+        # Shrink window while duplicate exists
+        while s[right] in char_set:
+            char_set.remove(s[left])
+            left += 1
+
+        # Add current character and update max
+        char_set.add(s[right])
+        max_length = max(max_length, right - left + 1)
+
+    return max_length
+```
+
+This achieves O(n) time with O(min(n, m)) space where m is character set size.
+
+## Best Practices
+
+1. **Sliding window pattern**: Maintain window state instead of recalculating
+2. **Incremental updates**: Add/remove characters as window slides, don't rebuild
+3. **Two pointers**: Use left and right pointers to manage window efficiently
+4. **Hash set for membership**: O(1) lookup instead of linear scans
+5. **Avoid substring creation**: Work with indices instead of creating string copies
+
+## Performance Impact
+
+For n = 1,000 characters:
+- Current approach: ~500,000,000 operations (nested loops + substring creations)
+- Optimized approach: ~2,000 operations (each character added/removed at most once)
+- Speedup: ~250,000x faster
+
+The sliding window technique is essential for substring problems and dramatically reduces complexity from cubic to linear.

@@ -1,0 +1,62 @@
+Performance Review: Group Anagrams Solution
+
+## Performance Bottlenecks
+
+The implementation has severe performance issues due to repeated sorting operations inside nested loops and inefficient character-by-character string comparison. The time complexity is approximately O(n² × k log k) where n is the number of strings and k is the average string length.
+
+Specific issues:
+- Nested loops check all pairs of strings
+- Sorting both strings on every comparison (lines with `sorted(strs[i])` and `sorted(strs[j])`)
+- Character-by-character comparison instead of direct equality check
+- The `used` array requires O(n) checks throughout execution
+- Sorting happens n² times in worst case
+
+## Memory Usage
+
+Memory usage is O(n × k) for the sorted string copies created repeatedly during comparisons. Each comparison creates two new sorted strings that are immediately discarded.
+
+## Algorithm Complexity
+
+- **Time Complexity**: O(n² × k log k) - nested loops with repeated sorting
+- **Space Complexity**: O(n × k) - temporary sorted strings and result storage
+
+For n = 1,000 strings of length k = 10, this performs tens of millions of operations.
+
+## Optimization Suggestions
+
+### Use Hash Map with Sorted Keys for O(n × k log k) Solution
+
+Replace nested loops with hash map grouping:
+
+```python
+def group_anagrams_optimized(strs):
+    from collections import defaultdict
+
+    anagram_groups = defaultdict(list)
+
+    for s in strs:
+        # Sort string once as key
+        key = ''.join(sorted(s))
+        anagram_groups[key].append(s)
+
+    return list(anagram_groups.values())
+```
+
+This achieves O(n × k log k) time - sorting each string once, not repeatedly.
+
+## Best Practices
+
+1. **Hash maps for grouping**: Use sorted string as hash key for O(1) lookup
+2. **Sort once per string**: Each string only needs to be sorted once
+3. **Avoid nested loops for grouping**: Hash maps eliminate need to compare all pairs
+4. **Use defaultdict**: Cleaner than manually checking key existence
+5. **Direct equality**: No need for character-by-character comparison after sorting
+
+## Performance Impact
+
+For n = 1,000 strings of length k = 10:
+- Current approach: ~10,000,000 operations (1000² comparisons × 10 log 10 sorts)
+- Optimized approach: ~100,000 operations (1000 sorts × 10 log 10)
+- Speedup: ~100x faster
+
+The hash map approach is the standard solution for grouping problems and demonstrates the power of using appropriate data structures.

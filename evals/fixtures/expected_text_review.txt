@@ -1,0 +1,18 @@
+Please review the following code for performance issues and potential optimizations:
+
+```
+def slow_function():
+    result = []
+    for i in range(1000):
+        result.append(i * 2)
+    return result
+```
+
+Provide a detailed analysis including:
+1. Performance bottlenecks or inefficiencies
+2. Memory usage concerns
+3. Algorithm complexity issues
+4. Suggestions for optimization
+5. Best practices recommendations
+
+Please provide the review as text output.

@@ -1,0 +1,65 @@
+Performance Review: Two Sum Solution
+
+## Performance Bottlenecks
+
+The current implementation has a significant performance bottleneck due to the nested loop structure. The algorithm checks every possible pair of numbers in the array, resulting in O(n²) time complexity. For large arrays, this becomes prohibitively slow.
+
+Specific issues:
+- Nested loops iterate through all elements (lines with `for i in range(len(nums))` and `for j in range(len(nums))`)
+- Each element is compared with every other element, including redundant comparisons
+- The condition `i != j` prevents self-comparison but doesn't eliminate duplicate pair checks
+
+## Memory Usage
+
+Memory usage is efficient in this implementation - only O(1) extra space is used since we're not storing intermediate results. However, this comes at the cost of computational efficiency.
+
+## Algorithm Complexity
+
+- **Time Complexity**: O(n²) - quadratic time due to nested loops
+- **Space Complexity**: O(1) - constant space
+
+For an array of size n, this performs approximately n² comparisons in the worst case.
+
+## Optimization Suggestions
+
+### Use Hash Map for O(n) Solution
+
+Replace the nested loops with a single-pass hash map approach:
+
+```python
+def two_sum_optimized(nums, target):
+    seen = {}
+    for i, num in enumerate(nums):
+        complement = target - num
+        if complement in seen:
+            return [seen[complement], i]
+        seen[num] = i
+    return []
+```
+
+This reduces time complexity from O(n²) to O(n) while using O(n) space.
+
+### Two-Pointer Approach (if sorting is allowed)
+
+If modifying the input array is acceptable, a two-pointer approach after sorting could work:
+- Sort the array: O(n log n)
+- Use two pointers from start and end
+- Move pointers based on sum comparison
+
+However, this changes the indices, so the hash map approach is generally preferred for this problem.
+
+## Best Practices
+
+1. **Avoid nested loops when possible**: Hash maps can often reduce O(n²) to O(n)
+2. **Trade space for time**: Using O(n) extra space to achieve O(n) time is usually worth it
+3. **Single pass when possible**: The optimized solution only needs one iteration
+4. **Use enumerate()**: Better than `range(len(nums))` for both index and value
+5. **Early return**: Both versions return immediately when solution is found (good!)
+
+## Performance Impact
+
+For n = 1000 elements:
+- Current approach: ~1,000,000 operations
+- Optimized approach: ~1,000 operations
+
+This represents a 1000x improvement for large inputs, making the difference between milliseconds and seconds (or seconds and hours for very large datasets).

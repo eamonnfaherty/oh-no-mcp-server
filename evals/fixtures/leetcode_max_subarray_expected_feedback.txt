@@ -1,0 +1,65 @@
+Performance Review: Maximum Subarray Solution
+
+## Performance Bottlenecks
+
+The implementation uses three nested loops resulting in catastrophic O(n³) time complexity. This brute force approach checks every possible subarray and recalculates sums from scratch each time.
+
+Specific issues:
+- Outer loop (i) iterates through all starting positions
+- Middle loop (j) iterates through all ending positions from i
+- Inner loop (k) calculates sum from i to j by iterating again
+- Sum calculation is repeated work that could be avoided
+- Total operations: approximately n³/6 for large n
+
+## Memory Usage
+
+Memory usage is optimal at O(1) - only tracking the maximum sum. However, the time complexity makes this solution completely impractical for any reasonable input size.
+
+## Algorithm Complexity
+
+- **Time Complexity**: O(n³) - cubic time due to three nested loops
+- **Space Complexity**: O(1) - constant space
+
+For an array of size n = 1,000, this performs approximately 166 million operations.
+
+## Optimization Suggestions
+
+### Use Kadane's Algorithm for O(n) Solution
+
+Replace triple nested loops with single-pass dynamic programming:
+
+```python
+def max_subarray_optimized(nums):
+    if not nums:
+        return 0
+
+    max_sum = nums[0]
+    current_sum = nums[0]
+
+    for i in range(1, len(nums)):
+        # Either extend existing subarray or start new one
+        current_sum = max(nums[i], current_sum + nums[i])
+        # Update global maximum
+        max_sum = max(max_sum, current_sum)
+
+    return max_sum
+```
+
+This achieves O(n) time complexity with O(1) space using Kadane's algorithm.
+
+## Best Practices
+
+1. **Recognize DP patterns**: Maximum subarray is a classic dynamic programming problem
+2. **Avoid recalculating sums**: Keep running sum instead of recalculating from scratch
+3. **Greedy local decisions**: At each position, decide whether to extend or restart subarray
+4. **Single pass when possible**: Kadane's algorithm processes array once
+5. **Learn standard algorithms**: Many problems have well-known optimal solutions
+
+## Performance Impact
+
+For n = 1,000 elements:
+- Current approach: ~166,000,000 operations
+- Optimized approach: ~1,000 operations
+- Speedup: ~166,000x faster
+
+The current solution would take hours for n = 10,000, while the optimized version runs in milliseconds. This is one of the most dramatic optimization opportunities in algorithm design.

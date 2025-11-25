@@ -1,0 +1,69 @@
+Performance Review: Valid Anagram Solution
+
+## Performance Bottlenecks
+
+The implementation has catastrophic performance issues due to sorting both strings repeatedly inside a loop, resulting in O(n² log n) time complexity. This is extremely inefficient for a problem that can be solved in O(n) time.
+
+Specific issues:
+- Sorting both strings for every character in the outer loop
+- For each character, counting occurrences with nested loops through sorted strings
+- The sorting operations (O(n log n)) are repeated n times
+- Character counting is done inefficiently with manual loops instead of using counts
+
+## Memory Usage
+
+Memory usage is inefficient at O(n²) due to creating sorted string copies repeatedly. Each sort creates a new list that's converted to a string, and this happens n times.
+
+## Algorithm Complexity
+
+- **Time Complexity**: O(n² log n) - sorting n times plus nested counting loops
+- **Space Complexity**: O(n²) - multiple sorted string copies created
+
+For strings of length n, this is one of the worst possible approaches.
+
+## Optimization Suggestions
+
+### Use Hash Map for O(n) Solution
+
+Replace repeated sorting with character frequency counting:
+
+```python
+def is_anagram_optimized(s, t):
+    if len(s) != len(t):
+        return False
+
+    char_count = {}
+
+    # Count characters in s
+    for char in s:
+        char_count[char] = char_count.get(char, 0) + 1
+
+    # Decrement counts using characters from t
+    for char in t:
+        if char not in char_count:
+            return False
+        char_count[char] -= 1
+        if char_count[char] < 0:
+            return False
+
+    return True
+```
+
+This achieves O(n) time complexity with O(1) space (26 letters maximum).
+
+## Best Practices
+
+1. **Avoid repeated expensive operations**: Never sort inside loops
+2. **Use hash maps for frequency counting**: O(1) lookups instead of O(n) scans
+3. **Single pass when possible**: Count frequencies in one pass through each string
+4. **Built-in methods**: Could also use `Counter` from collections module
+5. **Think about invariants**: Anagrams have identical character frequencies
+
+## Performance Impact
+
+For n = 1,000 characters:
+- Current approach: ~10,000,000+ operations (1000 sorts × 10,000 operations each)
+- Optimized approach: ~2,000 operations (two passes)
+- Speedup: ~5,000x faster
+
+The current solution is unusable for strings longer than a few dozen characters, while the optimized version handles thousands easily.

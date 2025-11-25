@@ -1,0 +1,63 @@
+Performance Review: Valid Palindrome Solution
+
+## Performance Bottlenecks
+
+The implementation suffers from severe performance issues due to repeated string concatenation operations. String concatenation using `+` operator in Python creates a new string object each time, resulting in O(n²) time complexity for building both the cleaned and reversed strings.
+
+Specific issues:
+- Line with `cleaned = cleaned + char.lower()` performs O(n) operation for each character
+- Line with `reversed_str = reversed_str + cleaned[i]` repeats the same inefficient pattern
+- Both cleaning and reversing operations are O(n²) when they should be O(n)
+
+## Memory Usage
+
+Memory usage is inefficient due to creating multiple intermediate string objects during concatenation. Each concatenation creates a new string, leading to O(n²) space for temporary objects that get garbage collected.
+
+## Algorithm Complexity
+
+- **Time Complexity**: O(n²) - quadratic due to string concatenation in loops
+- **Space Complexity**: O(n²) - temporary strings created during concatenation
+
+For a string of length n, this performs approximately n² memory allocations.
+
+## Optimization Suggestions
+
+### Use List and Join for O(n) Solution
+
+Replace string concatenation with list operations:
+
+```python
+def is_palindrome_optimized(s):
+    # Build cleaned string efficiently using list
+    cleaned_chars = [char.lower() for char in s if char.isalnum()]
+    cleaned = ''.join(cleaned_chars)
+
+    # Two-pointer approach - no need to reverse
+    left, right = 0, len(cleaned) - 1
+    while left < right:
+        if cleaned[left] != cleaned[right]:
+            return False
+        left += 1
+        right -= 1
+
+    return True
+```
+
+This achieves O(n) time and O(n) space complexity.
+
+## Best Practices
+
+1. **Use list comprehensions and join()**: Much more efficient than string concatenation
+2. **Two-pointer technique**: Avoid creating reversed strings by comparing from both ends
+3. **Single pass when possible**: The optimized solution processes the string once
+4. **Built-in methods**: Use `str.isalnum()` efficiently (already done correctly)
+5. **Avoid repeated object creation**: Lists are mutable and efficient for building sequences
+
+## Performance Impact
+
+For n = 10,000 characters:
+- Current approach: ~100,000,000 operations (string copies)
+- Optimized approach: ~10,000 operations
+- Speedup: ~10,000x faster
+
+This makes the difference between being unusable for long strings and running near-instantly.
